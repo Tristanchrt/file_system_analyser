@@ -1,4 +1,8 @@
-use std::{process::Command, sync::mpsc::Sender};
+use std::{
+    error::Error,
+    process::{Command, Output},
+    sync::mpsc::Sender,
+};
 
 pub struct CommandManager {
     pub current_dir: String,
@@ -9,9 +13,7 @@ impl CommandManager {
         Self { current_dir }
     }
 
-    pub fn directories_stats(&self, channel: Sender<String>) {
-        let args = &["-c", "ls -l | head -n 10"];
-        let output = self.exec("sh", args);
+    fn handle_output(&self, output: Result<Output, std::io::Error>, channel: Sender<String>) {
         match output {
             Ok(data) => {
                 // println!("Command exec: <{}>",);
@@ -23,6 +25,12 @@ impl CommandManager {
                 eprintln!("Error running command:\n{}", err);
             }
         }
+    }
+
+    pub fn directories_stats(&self, channel: Sender<String>) {
+        let args = &["-c", "ls -l | head -n 10"];
+        let output = self.exec("sh", args);
+        self.handle_output(output, channel);
     }
 
     fn exec(&self, cmd: &str, args: &[&str]) -> Result<std::process::Output, std::io::Error> {
