@@ -45,7 +45,61 @@ impl CommandManager {
                 "NF",
                 &["-c", &format!("find {} -type f | wc -l", self.current_dir)],
             ),
+            ("FM", &["-c", &format!("free -h")]),
+            ("DU", &["-c", &format!("df -h")]),
         ];
+
+        let mut result_output = HashMap::new();
+
+        for (key, args) in commands {
+            if let Ok(output) = self.get_command_output("sh", args) {
+                result_output.insert(key, output);
+            }
+        }
+        self.handle_output(Ok(result_output), channel);
+    }
+
+    pub fn cpu_memory(&self, channel: Sender<String>) {
+        let commands = [
+            (
+                "MEMORY_USAGE",
+                &[
+                    "-c",
+                    "ps -eo pid,ppid,cmd,%mem,%cpu --sort=-%mem | head -n 11",
+                ],
+            ),
+            ("PROCESS_USAGE", &["-c", "top -n 1 -b | grep 'Cpu(s)'"]),
+        ];
+
+        let mut result_output = HashMap::new();
+
+        for (key, args) in commands {
+            if let Ok(output) = self.get_command_output("sh", args) {
+                result_output.insert(key, output);
+            }
+        }
+        self.handle_output(Ok(result_output), channel);
+    }
+
+    pub fn newtork(&self, channel: Sender<String>) {
+        let commands = [
+            ("PORT", &["-c", "nmap 127.0.0.1"]),
+            ("ALL_CONNECTIONS", &["-c", "netstat -a"]),
+            ("INTERFACE_ROUTING", &["-c", "netstat -ie"]),
+        ];
+
+        let mut result_output = HashMap::new();
+
+        for (key, args) in commands {
+            if let Ok(output) = self.get_command_output("sh", args) {
+                result_output.insert(key, output);
+            }
+        }
+        self.handle_output(Ok(result_output), channel);
+    }
+
+    pub fn log(&self, channel: Sender<String>) {
+        let commands = [("LOG_ERROR", &["-c", "grep 'error' /var/log/syslog"])];
 
         let mut result_output = HashMap::new();
 
@@ -76,8 +130,9 @@ impl CommandManager {
     pub fn controller(&self, channel: Sender<String>, job_id: &str) {
         match job_id {
             "1" => self.directories_stats(channel),
-            "2" => println!("It's a banana!"),
-            "3" => println!("It's an orange!"),
+            "2" => self.log(channel),
+            "3" => self.newtork(channel),
+            "4" => self.cpu_memory(channel),
             _ => println!("It's something else"),
         }
     }

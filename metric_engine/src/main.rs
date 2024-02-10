@@ -24,8 +24,9 @@ fn main() {
         println!("Welcom to the file system analyser !");
         println!("What do you want to do ?");
         println!("1 - Directory Statistics");
-        println!("2 - Largest Files");
-        println!("3 - Search and Filtering");
+        println!("2 - Log Error");
+        println!("3 - Network Statisctics");
+        println!("4 - CPU & MEMORY Stastistics");
 
         let res = user_choice("Please enter you job");
 

@@ -1,6 +1,7 @@
 {
     "rust-analyzer.linkedProjects": [
-        "./Cargo.toml",
+        "./metric_engine/Cargo.toml",
+        "./metric_service/Cargo.toml",
     ],
     "rust-analyzer.showUnlinkedFileNotification": false,
     "[rust]": {
