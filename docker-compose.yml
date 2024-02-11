@@ -5,6 +5,33 @@ networks:
     external: true
 
 services:
+  metric_service:
+    build:
+      context: ./metric_service/.
+      target: dev
+    container_name: metric_service
+    command: cargo watch -x run
+    volumes:
+      - ./metric_service/:/usr/src/myapp
+    depends_on:
+      - kafka
+    networks:
+      - kafka-test
+
+  metric_engine:
+    build:
+      context: ./metric_engine/.
+      target: dev
+    container_name: metric_engine
+    command: cargo watch -x run
+    volumes:
+      - ./metric_engine/:/usr/src/myapp
+    depends_on:
+      - kafka
+      - metric_service
+    networks:
+      - kafka-test
+      
   kafka:
     image: 'bitnami/kafka:3.3.1'
     container_name: kafka-test

@@ -29,24 +29,8 @@ impl CommandManager {
 
     pub fn directories_stats(&self, channel: Sender<String>) {
         let commands = [
-            (
-                "CDS",
-                &["-c", &format!("ls -l {} | head -n 10", self.current_dir)],
-            ),
-            (
-                "NSD",
-                &[
-                    "-c",
-                    &format!("find {} -mindepth 1 -type d | wc -l", self.current_dir),
-                ],
-            ),
-            ("SD", &["-c", &format!("du -sh {}", self.current_dir)]),
-            (
-                "NF",
-                &["-c", &format!("find {} -type f | wc -l", self.current_dir)],
-            ),
-            ("FM", &["-c", &format!("free -h")]),
-            ("DU", &["-c", &format!("df -h")]),
+            ("FREE_MEMORY", &["-c", &format!("free -h")]),
+            ("TOTAL_SPACE_AVAIL", &["-c", &format!("df -h")]),
         ];
 
         let mut result_output = HashMap::new();

@@ -16,10 +16,8 @@ impl MessageManager {
             .unwrap();
 
         producer
-            .send(&Record::from_value("my-topic", data.as_bytes()))
+            .send(&Record::from_value("metric-data", data.as_bytes()))
             .unwrap();
-
-        println!("******* Result: ********* \n{}", data);
     }
     pub fn get_messages(&self, rx: &Receiver<String>) {
         match rx.recv() {
